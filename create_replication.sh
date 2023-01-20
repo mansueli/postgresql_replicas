@@ -62,7 +62,7 @@ sed "${sedi[@]}" -e's/ (//g' list_of_tables.txt
 #Note: for all tables requires superuser. 
 ###
 
-PGPASSWORD="$ORIGINAL_DB_PASS" cat yourdomainlist | xargs -L1 psql -d postgres -U postgres \
+cat yourdomainlist | xargs -L1 PGPASSWORD="$ORIGINAL_DB_PASS" psql -d postgres -U postgres \
   -c 'CREATE PUBLICATION my_publication FOR TABLE ${1};' \
   -h "$ORIGINAL_DB_URL" -p 6543
 
