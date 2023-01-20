@@ -4,8 +4,8 @@
 #Edit data below:
 ###
 
-ORIGINAL_DB_URL=db.old_project_ref.supabase.co
-REPLICA_DB_URL=db.new_project_ref.supabase.co
+ORIGINAL_DB_URL=db.original_project_ref.supabase.co
+REPLICA_DB_URL=db.replica_project_ref.supabase.co
 ORIGINAL_DB_PASS=secret_password_here
 REPLICA_DB_PASS=secret_new_password_here
 
