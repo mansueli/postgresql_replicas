@@ -30,8 +30,7 @@ PGPASSWORD="$ORIGINAL_DB_PASS" pg_dump -d postgres -U postgres \
   --if-exists \
   --schema-only \
   --quote-all-identifiers \
-  --exclude-table-data 'storage.objects' \
-  --exclude-schema 'extensions|graphql|graphql_public|net|pgbouncer|pgsodium|pgsodium_masks|realtime|supabase_functions|pg_toast|pg_catalog|pg_*|information_schema' \
+  --exclude-schema 'extensions|graphql|tiger|storage|graphql_public|net|pgbouncer|pgsodium|pgsodium_masks|realtime|supabase_functions|pg_toast|pg_catalog|pg_*|information_schema' \
   --schema '*' \
   -h "$ORIGINAL_DB_URL" > dump.sql
 
@@ -51,11 +50,20 @@ PGPASSWORD="$REPLICA_DB_PASS" psql -d postgres -U postgres \
   -h "$REPLICA_DB_URL" -p 6543
   
 ####
-#Create publication:
+#Creating a list of tables:
 ###
 
-PGPASSWORD="$ORIGINAL_DB_PASS" psql -d postgres -U postgres \
-  -c 'CREATE PUBLICATION my_publication FOR ALL TABLES;' \
+grep -i "create table" dump.sql > list_of_tables.txt
+sed "${sedi[@]}" -e 's/CREATE TABLE //g'  list_of_tables.txt
+sed "${sedi[@]}" -e's/ (//g' list_of_tables.txt
+
+####
+#Create publication for each table:
+#Note: for all tables requires superuser. 
+###
+
+PGPASSWORD="$ORIGINAL_DB_PASS" cat yourdomainlist | xargs -L1 psql -d postgres -U postgres \
+  -c 'CREATE PUBLICATION my_publication FOR TABLE ${1};' \
   -h "$ORIGINAL_DB_URL" -p 6543
 
 ####
